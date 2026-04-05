@@ -131,6 +131,7 @@ const config: Config = {
         'scale-in':      'scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards',
         'pulse-cyan':    'pulseCyan 2s ease-in-out infinite',
         'spin-slow':     'spin 3s linear infinite',
+        'marquee':       'marquee 30s linear infinite',
         'countdown':     'countdownFlip 0.3s ease-out',
       },
       keyframes: {
@@ -157,6 +158,10 @@ const config: Config = {
         pulseCyan: {
           '0%, 100%': { boxShadow: '0 0 8px rgba(255, 255, 255, 0.2)' },
           '50%':      { boxShadow: '0 0 24px rgba(255, 255, 255, 0.5)' },
+        },
+        marquee: {
+          from: { transform: 'translateX(0)' },
+          to:   { transform: 'translateX(-50%)' },
         },
         countdownFlip: {
           from: { transform: 'translateY(-10px)', opacity: '0' },
