@@ -77,20 +77,6 @@ export default async function HomePage() {
     <>
       <HeroBanner />
 
-      {/* Productos destacados */}
-      <section className="container-site py-16">
-        <div className="flex items-end justify-between mb-8">
-          <div>
-            <Label>Lo más popular</Label>
-            <Heading size="md" className="mt-1">DESTACADOS</Heading>
-          </div>
-          <Link href="/catalogo" className="flex items-center gap-1 text-sm text-vx-gray400 hover:text-vx-cyan transition-colors">
-            Ver todo <IconArrowRight className="w-4 h-4" />
-          </Link>
-        </div>
-        <ProductGrid products={destacados ?? []} showFilters={false} />
-      </section>
-
       {/* Todos los productos */}
       {(todos ?? []).length > 0 && (
         <section className="container-site py-16 border-t border-vx-gray800">
