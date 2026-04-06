@@ -15,6 +15,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'cf.cjdropshipping.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'http2.mlstatic.com',
+      },
     ],
   },
 }
