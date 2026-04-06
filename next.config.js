@@ -21,6 +21,14 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'http2.mlstatic.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'ss701.liverpool.com.mx',
+      },
+      {
+        protocol: 'https',
+        hostname: 'resources.sears.com.mx',
+      },
     ],
   },
 }
