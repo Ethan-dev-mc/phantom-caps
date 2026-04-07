@@ -14,7 +14,7 @@ export default function ConfigForm() {
   const [error, setError] = useState('')
 
   useEffect(() => {
-    fetch('/api/admin/configuracion')
+    fetch('/api/admin/configuracion?t=' + Date.now(), { cache: 'no-store' })
       .then(r => r.json())
       .then(({ data }) => {
         if (data) {
@@ -41,6 +41,14 @@ export default function ConfigForm() {
       if (!res.ok) {
         setError(json.error ?? 'Error al guardar')
       } else {
+        // Reload from DB to confirm saved values
+        const fresh = await fetch('/api/admin/configuracion?t=' + Date.now(), { cache: 'no-store' })
+        const { data } = await fresh.json()
+        if (data) {
+          const map: Record<string, string> = {}
+          for (const { clave, valor } of data) map[clave] = valor
+          setForm(map)
+        }
         setSaved(true)
         setTimeout(() => setSaved(false), 2000)
       }
