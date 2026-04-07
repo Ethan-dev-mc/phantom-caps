@@ -22,6 +22,7 @@ export async function POST(req: NextRequest) {
   const errors: string[] = []
 
   for (const [clave, valor] of Object.entries(body)) {
+    if (valor === '' || valor === null || valor === undefined) continue
     // Try update first (record exists)
     const { data: existing } = await supabase
       .from('configuracion')
