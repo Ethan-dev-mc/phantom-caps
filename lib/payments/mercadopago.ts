@@ -1,6 +1,6 @@
-export async function createMercadoPagoPreference(pedidoId: string, total: number) {
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://veintiox.store'
+const SITE_URL = 'https://veintiox.store'
 
+export async function createMercadoPagoPreference(pedidoId: string, total: number) {
   const res = await fetch('https://api.mercadopago.com/checkout/preferences', {
     method: 'POST',
     headers: {
@@ -11,12 +11,12 @@ export async function createMercadoPagoPreference(pedidoId: string, total: numbe
       items: [{ title: 'Pedido Veintiox', quantity: 1, unit_price: Number(total), currency_id: 'MXN' }],
       external_reference: pedidoId,
       back_urls: {
-        success: `${base}/checkout/confirmacion`,
-        failure: `${base}/carrito`,
-        pending: `${base}/checkout/confirmacion`,
+        success: `${SITE_URL}/checkout/confirmacion`,
+        failure: `${SITE_URL}/carrito`,
+        pending: `${SITE_URL}/checkout/confirmacion`,
       },
       auto_return: 'approved',
-      notification_url: `${base}/api/webhooks/mercadopago`,
+      notification_url: `${SITE_URL}/api/webhooks/mercadopago`,
     }),
   })
 
