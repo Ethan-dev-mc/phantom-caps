@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Drop.mx Agency — Servicios Digitales</title>
+<style>
+  @page { size: A4; margin: 0; }
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { font-family: 'Segoe UI', sans-serif; width: 210mm; background: #fff; color: #111; }
+
+  /* ── PORTADA ── */
+  .cover {
+    background: #0a0a0a !important;
+    height: 297mm;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 50px 56px;
+    break-after: page;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover-bg-circle {
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.04);
+    top: -100px;
+    right: -150px;
+  }
+  .cover-bg-circle2 {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.06);
+    bottom: 100px;
+    left: -80px;
+  }
+  .cover-top { display: flex; justify-content: space-between; align-items: center; }
+  .cover-logo { font-size: 13px; font-weight: 900; letter-spacing: 4px; color: #fff; text-transform: uppercase; }
+  .cover-logo span { color: rgba(255,255,255,0.3); }
+  .cover-tag-pill {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.5);
+    font-size: 9px;
+    letter-spacing: 3px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    text-transform: uppercase;
+  }
+  .cover-center { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 60px 0 40px; }
+  .cover-eyebrow {
+    font-size: 10px;
+    letter-spacing: 5px;
+    color: rgba(255,255,255,0.3);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .cover-title {
+    font-size: 78px;
+    font-weight: 900;
+    letter-spacing: -4px;
+    line-height: 0.9;
+    color: #fff;
+    margin-bottom: 6px;
+  }
+  .cover-title span { color: rgba(255,255,255,0.2); }
+  .cover-subtitle {
+    font-size: 13px;
+    color: rgba(255,255,255,0.35);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-top: 24px;
+    margin-bottom: 48px;
+  }
+  .cover-services-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .cover-pill {
+    border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.45);
+    font-size: 9px;
+    letter-spacing: 2px;
+    padding: 7px 14px;
+    border-radius: 20px;
+    text-transform: uppercase;
+  }
+  .cover-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .cover-bottom-left { }
+  .cover-stat { margin-bottom: 16px; }
+  .cover-stat-num { font-size: 32px; font-weight: 900; color: #fff; line-height: 1; }
+  .cover-stat-label { font-size: 9px; color: rgba(255,255,255,0.3); letter-spacing: 3px; text-transform: uppercase; margin-top: 2px; }
+  .cover-stats-row { display: flex; gap: 40px; }
+  .cover-bottom-right { text-align: right; }
+  .cover-bottom-tag { font-size: 9px; color: rgba(255,255,255,0.2); letter-spacing: 3px; text-transform: uppercase; }
+
+  /* ── PAGES ── */
+  .page {
+    height: 297mm;
+    padding: 48px 56px;
+    break-after: page;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 24px;
+    margin-bottom: 36px;
+    border-bottom: 1px solid #efefef;
+  }
+  .page-logo { font-size: 11px; font-weight: 900; letter-spacing: 3px; color: #111; }
+  .page-logo span { color: #ccc; }
+  .page-num { font-size: 9px; color: #ccc; letter-spacing: 3px; text-transform: uppercase; }
+
+  .section-eyebrow { font-size: 9px; letter-spacing: 4px; color: #bbb; text-transform: uppercase; margin-bottom: 6px; }
+  .section-title { font-size: 32px; font-weight: 900; letter-spacing: -1px; line-height: 1; margin-bottom: 28px; }
+
+  /* SERVICE CARDS */
+  .svc { border: 1px solid #f0f0f0; border-radius: 14px; padding: 22px 24px; margin-bottom: 14px; display: flex; gap: 20px; align-items: flex-start; }
+  .svc-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    background: #0a0a0a !important; display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
+  }
+  .svc-body { flex: 1; }
+  .svc-name { font-size: 15px; font-weight: 800; margin-bottom: 5px; letter-spacing: -0.3px; }
+  .svc-desc { font-size: 11px; color: #777; line-height: 1.6; margin-bottom: 10px; }
+  .svc-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+  .svc-tag { font-size: 9px; background: #f5f5f5; color: #555; padding: 3px 9px; border-radius: 10px; letter-spacing: 0.5px; }
+  .svc-price { text-align: right; flex-shrink: 0; }
+  .svc-price-num { font-size: 18px; font-weight: 900; letter-spacing: -0.5px; }
+  .svc-price-label { font-size: 9px; color: #bbb; letter-spacing: 1px; margin-top: 2px; }
+
+  /* PROCESO */
+  .process-grid { display: flex; flex-direction: column; gap: 0; flex: 1; }
+  .process-step {
+    display: flex;
+    gap: 20px;
+    padding: 18px 0;
+    border-bottom: 1px solid #f5f5f5;
+    align-items: flex-start;
+  }
+  .process-num-wrap {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: #0a0a0a !important;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .process-num { font-size: 11px; font-weight: 900; color: #fff; letter-spacing: 0; }
+  .process-body {}
+  .process-title { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+  .process-desc { font-size: 11px; color: #777; line-height: 1.6; }
+
+  /* POR QUE */
+  .reasons-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .reason {
+    background: #f9f9f9 !important;
+    border-radius: 12px;
+    padding: 18px 20px;
+  }
+  .reason-icon { font-size: 20px; margin-bottom: 10px; }
+  .reason-title { font-size: 12px; font-weight: 800; margin-bottom: 5px; }
+  .reason-desc { font-size: 10px; color: #777; line-height: 1.6; }
+
+  /* CONTACTO */
+  .contact-page {
+    background: #0a0a0a !important;
+    height: 297mm;
+    padding: 56px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    break-after: page;
+    position: relative;
+    overflow: hidden;
+  }
+  .contact-deco {
+    position: absolute;
+    right: -60px; top: -60px;
+    width: 320px; height: 320px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.04);
+  }
+  .contact-deco2 {
+    position: absolute;
+    left: -40px; bottom: 80px;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+  .contact-logo { font-size: 11px; font-weight: 900; letter-spacing: 4px; color: rgba(255,255,255,0.3); text-transform: uppercase; }
+  .contact-center { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+  .contact-eyebrow { font-size: 9px; letter-spacing: 5px; color: rgba(255,255,255,0.25); text-transform: uppercase; margin-bottom: 14px; }
+  .contact-title { font-size: 64px; font-weight: 900; letter-spacing: -3px; color: #fff; line-height: 0.95; margin-bottom: 20px; }
+  .contact-title span { color: rgba(255,255,255,0.2); }
+  .contact-sub { font-size: 12px; color: rgba(255,255,255,0.35); line-height: 1.7; max-width: 320px; margin-bottom: 48px; }
+  .contact-items { display: flex; flex-direction: column; gap: 20px; }
+  .contact-item {}
+  .contact-label { font-size: 9px; letter-spacing: 3px; color: rgba(255,255,255,0.25); text-transform: uppercase; margin-bottom: 4px; }
+  .contact-value { font-size: 20px; font-weight: 700; color: #fff; }
+  .contact-bottom { display: flex; justify-content: space-between; align-items: center; }
+  .contact-bottom-text { font-size: 9px; color: rgba(255,255,255,0.15); letter-spacing: 3px; text-transform: uppercase; }
+  .contact-cta {
+    background: #fff !important;
+    color: #000;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    padding: 12px 24px;
+    border-radius: 30px;
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+
+<!-- ── PORTADA ── -->
+<div class="cover">
+  <div class="cover-bg-circle"></div>
+  <div class="cover-bg-circle2"></div>
+
+  <div class="cover-top">
+    <div class="cover-logo">DROP<span>.MX</span> AGENCY</div>
+    <div class="cover-tag-pill">Guadalajara, Jalisco · 2026</div>
+  </div>
+
+  <div class="cover-center">
+    <p class="cover-eyebrow">Agencia de servicios digitales</p>
+    <h1 class="cover-title">DROP<span>.MX</span></h1>
+    <p class="cover-subtitle">Agency</p>
+    <div class="cover-services-row">
+      <span class="cover-pill">Tiendas Online</span>
+      <span class="cover-pill">Meta Ads</span>
+      <span class="cover-pill">TikTok Ads</span>
+      <span class="cover-pill">Videos para Marcas</span>
+      <span class="cover-pill">Mantenimiento</span>
+    </div>
+  </div>
+
+  <div class="cover-bottom">
+    <div class="cover-stats-row">
+      <div class="cover-stat">
+        <div class="cover-stat-num">100%</div>
+        <div class="cover-stat-label">Resultados medibles</div>
+      </div>
+      <div class="cover-stat">
+        <div class="cover-stat-num">5–10</div>
+        <div class="cover-stat-label">Días de entrega</div>
+      </div>
+      <div class="cover-stat">
+        <div class="cover-stat-num">MX</div>
+        <div class="cover-stat-label">Enfoque local</div>
+      </div>
+    </div>
+    <div class="cover-bottom-right">
+      <div class="cover-bottom-tag">dropmx_agency</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── SERVICIOS 1 ── -->
+<div class="page">
+  <div class="page-header">
+    <span class="page-logo">DROP<span>.MX</span> AGENCY</span>
+    <span class="page-num">02 · Servicios</span>
+  </div>
+
+  <p class="section-eyebrow">Lo que ofrezco</p>
+  <h2 class="section-title">SERVICIOS</h2>
+
+  <div class="svc">
+    <div class="svc-icon">🛒</div>
+    <div class="svc-body">
+      <p class="svc-name">Tienda Online Completa</p>
+      <p class="svc-desc">Diseño y desarrollo de tu ecommerce profesional. Panel admin propio, pagos con MercadoPago, catálogo de productos y lista para vender desde el día 1.</p>
+      <div class="svc-tags">
+        <span class="svc-tag">Diseño personalizado</span>
+        <span class="svc-tag">Panel admin</span>
+        <span class="svc-tag">MercadoPago</span>
+        <span class="svc-tag">Dominio incluido</span>
+        <span class="svc-tag">Dropshipping opcional</span>
+      </div>
+    </div>
+    <div class="svc-price">
+      <div class="svc-price-num">$12,000</div>
+      <div class="svc-price-label">MXN · pago único</div>
+    </div>
+  </div>
+
+  <div class="svc">
+    <div class="svc-icon">📣</div>
+    <div class="svc-body">
+      <p class="svc-name">Publicidad Digital</p>
+      <p class="svc-desc">Gestión profesional de campañas en Meta Ads y TikTok Ads. Creamos, optimizamos y escalamos tus anuncios para maximizar el retorno de inversión.</p>
+      <div class="svc-tags">
+        <span class="svc-tag">Facebook + Instagram Ads</span>
+        <span class="svc-tag">TikTok Ads</span>
+        <span class="svc-tag">Creación de campañas</span>
+        <span class="svc-tag">Reportes mensuales</span>
+      </div>
+    </div>
+    <div class="svc-price">
+      <div class="svc-price-num">$3,500</div>
+      <div class="svc-price-label">MXN / mes</div>
+    </div>
+  </div>
+
+  <div class="svc">
+    <div class="svc-icon">🎬</div>
+    <div class="svc-body">
+      <p class="svc-name">Videos para tu Marca</p>
+      <p class="svc-desc">Producción de contenido audiovisual para redes sociales. Reels, TikToks y videos de producto que conectan con tu audiencia y generan ventas.</p>
+      <div class="svc-tags">
+        <span class="svc-tag">Videos de producto</span>
+        <span class="svc-tag">Reels / TikToks</span>
+        <span class="svc-tag">Guión incluido</span>
+        <span class="svc-tag">Entrega en 5 días</span>
+      </div>
+    </div>
+    <div class="svc-price">
+      <div class="svc-price-num">$3,000</div>
+      <div class="svc-price-label">MXN · por video</div>
+    </div>
+  </div>
+
+  <div class="svc">
+    <div class="svc-icon">⚙️</div>
+    <div class="svc-body">
+      <p class="svc-name">Mantenimiento Mensual</p>
+      <p class="svc-desc">Tu tienda siempre funcionando y actualizada. Soporte técnico, nuevos productos, cambios de precio y mejoras continuas mes a mes.</p>
+      <div class="svc-tags">
+        <span class="svc-tag">Soporte técnico</span>
+        <span class="svc-tag">Actualización de productos</span>
+        <span class="svc-tag">Cambios menores</span>
+        <span class="svc-tag">Respuesta en 24h</span>
+      </div>
+    </div>
+    <div class="svc-price">
+      <div class="svc-price-num">$1,200</div>
+      <div class="svc-price-label">MXN / mes</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── POR QUÉ + PROCESO ── -->
+<div class="page">
+  <div class="page-header">
+    <span class="page-logo">DROP<span>.MX</span> AGENCY</span>
+    <span class="page-num">03 · Por qué nosotros</span>
+  </div>
+
+  <p class="section-eyebrow">Ventajas</p>
+  <h2 class="section-title">¿POR QUÉ DROP.MX?</h2>
+
+  <div class="reasons-grid" style="margin-bottom: 36px;">
+    <div class="reason">
+      <div class="reason-icon">⚡</div>
+      <p class="reason-title">Entrega en 5–10 días</p>
+      <p class="reason-desc">No esperamos meses. Tu tienda o campaña lista y funcionando en tiempo récord.</p>
+    </div>
+    <div class="reason">
+      <div class="reason-icon">🎯</div>
+      <p class="reason-title">Todo en un solo lugar</p>
+      <p class="reason-desc">Web, publicidad y contenido. No necesitas contratar a 3 proveedores distintos.</p>
+    </div>
+    <div class="reason">
+      <div class="reason-icon">📊</div>
+      <p class="reason-title">Resultados medibles</p>
+      <p class="reason-desc">Reportes claros cada mes. Sabes exactamente qué resultados genera tu inversión.</p>
+    </div>
+    <div class="reason">
+      <div class="reason-icon">📍</div>
+      <p class="reason-title">Soporte local en GDL</p>
+      <p class="reason-desc">Basados en Guadalajara. Disponibles por WhatsApp. Sin barreras ni intermediarios.</p>
+    </div>
+  </div>
+
+  <p class="section-eyebrow">Cómo trabajamos</p>
+  <h2 class="section-title" style="font-size:24px; margin-bottom: 16px;">EL PROCESO</h2>
+
+  <div class="process-grid">
+    <div class="process-step">
+      <div class="process-num-wrap"><span class="process-num">1</span></div>
+      <div class="process-body">
+        <p class="process-title">Consulta gratuita</p>
+        <p class="process-desc">Hablamos por WhatsApp o videollamada. Entendemos tu negocio y objetivos. Sin costo ni compromiso.</p>
+      </div>
+    </div>
+    <div class="process-step">
+      <div class="process-num-wrap"><span class="process-num">2</span></div>
+      <div class="process-body">
+        <p class="process-title">Propuesta personalizada</p>
+        <p class="process-desc">Te enviamos alcance, tiempos y precio. Todo por escrito y sin sorpresas.</p>
+      </div>
+    </div>
+    <div class="process-step">
+      <div class="process-num-wrap"><span class="process-num">3</span></div>
+      <div class="process-body">
+        <p class="process-title">Desarrollo y revisiones</p>
+        <p class="process-desc">Trabajamos y te mantenemos al tanto. Incluye rondas de ajustes hasta que quede perfecto.</p>
+      </div>
+    </div>
+    <div class="process-step">
+      <div class="process-num-wrap"><span class="process-num">4</span></div>
+      <div class="process-body">
+        <p class="process-title">Lanzamiento y soporte</p>
+        <p class="process-desc">Tu proyecto sale en vivo. Te entregamos accesos y quedamos disponibles para lo que necesites.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── CONTACTO ── -->
+<div class="contact-page">
+  <div class="contact-deco"></div>
+  <div class="contact-deco2"></div>
+
+  <div class="contact-logo">DROP.MX AGENCY</div>
+
+  <div class="contact-center">
+    <p class="contact-eyebrow">¿Listo para crecer?</p>
+    <h2 class="contact-title">HABLE<span>MOS</span></h2>
+    <p class="contact-sub">Primera consulta gratis y sin compromiso. Cuéntame tu idea y te digo exactamente cómo hacerla realidad.</p>
+
+    <div class="contact-items">
+      <div class="contact-item">
+        <p class="contact-label">WhatsApp</p>
+        <p class="contact-value">33 1638 5546</p>
+      </div>
+      <div class="contact-item">
+        <p class="contact-label">Instagram</p>
+        <p class="contact-value">@dropmx_agency</p>
+      </div>
+      <div class="contact-item">
+        <p class="contact-label">Ubicación</p>
+        <p class="contact-value">Guadalajara, Jalisco</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="contact-bottom">
+    <p class="contact-bottom-text">Drop.mx Agency · 2026</p>
+    <div class="contact-cta">Escríbenos hoy</div>
+  </div>
+</div>
+
+</body>
+</html>

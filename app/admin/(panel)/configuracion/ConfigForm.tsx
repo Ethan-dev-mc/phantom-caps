@@ -70,6 +70,30 @@ export default function ConfigForm() {
       <Input label="URL TikTok" value={form.tiktok_url ?? ''} onChange={(e) => set('tiktok_url', e.target.value)} />
       <Input label="URL Facebook" value={form.facebook_url ?? ''} onChange={(e) => set('facebook_url', e.target.value)} />
       <Input label="Email de contacto" value={form.contacto_email ?? ''} onChange={(e) => set('contacto_email', e.target.value)} />
+
+      <div className="pt-4 border-t border-vx-gray800">
+        <p className="text-xs text-vx-gray500 uppercase tracking-wider mb-4">Dirección de origen (envíos)</p>
+        <div className="flex flex-col gap-4">
+          <Input label="Nombre / Empresa" value={form.envio_origen_nombre ?? ''} onChange={(e) => set('envio_origen_nombre', e.target.value)} />
+          <Input label="Teléfono" value={form.envio_origen_telefono ?? ''} onChange={(e) => set('envio_origen_telefono', e.target.value)} />
+          <Input label="Email" value={form.envio_origen_email ?? ''} onChange={(e) => set('envio_origen_email', e.target.value)} />
+          <Input label="Calle y número" value={form.envio_origen_calle ?? ''} onChange={(e) => set('envio_origen_calle', e.target.value)} />
+          <Input label="Ciudad" value={form.envio_origen_ciudad ?? ''} onChange={(e) => set('envio_origen_ciudad', e.target.value)} />
+          <Input label="Estado" value={form.envio_origen_estado ?? ''} onChange={(e) => set('envio_origen_estado', e.target.value)} />
+          <Input label="Código Postal" value={form.envio_origen_cp ?? ''} onChange={(e) => set('envio_origen_cp', e.target.value)} />
+        </div>
+      </div>
+
+      <div className="pt-4 border-t border-vx-gray800">
+        <p className="text-xs text-vx-gray500 uppercase tracking-wider mb-4">Dimensiones de paquete típico</p>
+        <div className="grid grid-cols-2 gap-4">
+          <Input label="Peso (kg)" type="number" value={form.paquete_peso ?? '1'} onChange={(e) => set('paquete_peso', e.target.value)} />
+          <Input label="Largo (cm)" type="number" value={form.paquete_largo ?? '20'} onChange={(e) => set('paquete_largo', e.target.value)} />
+          <Input label="Ancho (cm)" type="number" value={form.paquete_ancho ?? '15'} onChange={(e) => set('paquete_ancho', e.target.value)} />
+          <Input label="Alto (cm)" type="number" value={form.paquete_alto ?? '10'} onChange={(e) => set('paquete_alto', e.target.value)} />
+        </div>
+      </div>
+
       <Button onClick={save} loading={saving}>
         {saved ? <><IconCheck className="w-4 h-4" /> Guardado</> : 'Guardar cambios'}
       </Button>

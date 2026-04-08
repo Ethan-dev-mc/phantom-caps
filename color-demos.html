@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demos de Color — Veintiox</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0a0a; font-family: 'Segoe UI', sans-serif; color: #fff; padding: 40px 20px; }
+  h1 { text-align: center; color: #888; font-size: 14px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 48px; }
+
+  .demos { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 32px; max-width: 1100px; margin: 0 auto; }
+
+  .demo { background: #111; border-radius: 16px; overflow: hidden; border: 1px solid #222; }
+  .demo-label { padding: 16px 20px; background: #0a0a0a; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: #555; }
+  .demo-name { padding: 0 20px 16px; font-size: 20px; font-weight: 700; letter-spacing: 2px; }
+
+  /* Navbar mockup */
+  .navbar { background: #111; border-bottom: 1px solid #1e1e1e; padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; }
+  .nav-logo { font-size: 14px; font-weight: 800; letter-spacing: 4px; }
+  .nav-links { display: flex; gap: 16px; font-size: 11px; letter-spacing: 2px; }
+
+  /* Banner */
+  .banner { padding: 10px 20px; font-size: 11px; letter-spacing: 2px; text-align: center; font-weight: 600; }
+
+  /* Card */
+  .card-area { padding: 20px; display: flex; gap: 12px; }
+  .card { background: #181818; border-radius: 10px; overflow: hidden; flex: 1; }
+  .card-img { height: 100px; background: #222; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #444; letter-spacing: 2px; }
+  .card-body { padding: 10px 12px; }
+  .card-title { font-size: 11px; font-weight: 600; letter-spacing: 1px; margin-bottom: 6px; }
+  .card-price { font-size: 13px; font-weight: 700; }
+  .card-btn { margin-top: 10px; padding: 7px 12px; border: none; border-radius: 6px; font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; width: 100%; }
+
+  /* Badge */
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 9px; font-weight: 700; letter-spacing: 2px; margin-bottom: 8px; }
+
+  /* Sidebar mockup */
+  .sidebar-row { padding: 20px; border-top: 1px solid #1a1a1a; display: flex; gap: 10px; align-items: center; }
+  .sidebar-icon { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+  .sidebar-text { font-size: 11px; letter-spacing: 1px; }
+  .sidebar-active { font-weight: 700; }
+
+  /* ---- OPTION 1: Naranja Fuego ---- */
+  .o1 .banner { background: #e84012; }
+  .o1 .demo-name { color: #e84012; }
+  .o1 .nav-links span.active { color: #e84012; }
+  .o1 .card-price { color: #e84012; }
+  .o1 .card-btn { background: #e84012; color: #fff; }
+  .o1 .badge { background: #e840121a; color: #e84012; border: 1px solid #e84012; }
+  .o1 .sidebar-icon.active { background: #e840121a; color: #e84012; }
+  .o1 .sidebar-text.active { color: #e84012; }
+
+  /* ---- OPTION 2: Violeta Neón ---- */
+  .o2 .banner { background: #7c3aed; }
+  .o2 .demo-name { color: #a855f7; }
+  .o2 .nav-links span.active { color: #a855f7; }
+  .o2 .card-price { color: #a855f7; }
+  .o2 .card-btn { background: #7c3aed; color: #fff; }
+  .o2 .badge { background: #a855f71a; color: #a855f7; border: 1px solid #a855f7; }
+  .o2 .sidebar-icon.active { background: #a855f71a; color: #a855f7; }
+  .o2 .sidebar-text.active { color: #a855f7; }
+
+  /* ---- OPTION 3: Blanco Puro ---- */
+  .o3 .banner { background: #fff; color: #000; }
+  .o3 .demo-name { color: #ffffff; }
+  .o3 .nav-links span.active { color: #fff; border-bottom: 1px solid #fff; }
+  .o3 .card-price { color: #fff; }
+  .o3 .card-btn { background: #fff; color: #000; }
+  .o3 .badge { background: #ffffff15; color: #fff; border: 1px solid #fff; }
+  .o3 .sidebar-icon.active { background: #ffffff15; color: #fff; }
+  .o3 .sidebar-text.active { color: #fff; }
+</style>
+</head>
+<body>
+<h1>Demos de color — Elige uno</h1>
+
+<div class="demos">
+
+  <!-- OPCION 1 -->
+  <div class="demo o1">
+    <div class="demo-label">Opción 1</div>
+    <div class="demo-name">NARANJA FUEGO</div>
+    <div class="navbar">
+      <span class="nav-logo">VEINTIOX</span>
+      <div class="nav-links">
+        <span class="active">CATÁLOGO</span>
+        <span style="color:#555">HOODIES</span>
+        <span style="color:#555">TENIS</span>
+      </div>
+    </div>
+    <div class="banner">ENVÍO GRATIS EN COMPRAS MAYORES A $999</div>
+    <div class="card-area">
+      <div class="card">
+        <div class="card-img">IMAGEN</div>
+        <div class="card-body">
+          <div class="badge">NUEVO</div>
+          <div class="card-title">HOODIE PHANTOM</div>
+          <div class="card-price">$1,299</div>
+          <button class="card-btn">AGREGAR</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-img">IMAGEN</div>
+        <div class="card-body">
+          <div class="badge">DROPS</div>
+          <div class="card-title">TENIS VOID</div>
+          <div class="card-price">$2,499</div>
+          <button class="card-btn">AGREGAR</button>
+        </div>
+      </div>
+    </div>
+    <div class="sidebar-row">
+      <div class="sidebar-icon active">⊞</div>
+      <span class="sidebar-text active">Dashboard</span>
+    </div>
+    <div class="sidebar-row">
+      <div class="sidebar-icon" style="color:#444">◻</div>
+      <span class="sidebar-text" style="color:#444">Productos</span>
+    </div>
+  </div>
+
+  <!-- OPCION 2 -->
+  <div class="demo o2">
+    <div class="demo-label">Opción 2</div>
+    <div class="demo-name">VIOLETA NEÓN</div>
+    <div class="navbar">
+      <span class="nav-logo">VEINTIOX</span>
+      <div class="nav-links">
+        <span class="active" style="color:#a855f7">CATÁLOGO</span>
+        <span style="color:#555">HOODIES</span>
+        <span style="color:#555">TENIS</span>
+      </div>
+    </div>
+    <div class="banner">ENVÍO GRATIS EN COMPRAS MAYORES A $999</div>
+    <div class="card-area">
+      <div class="card">
+        <div class="card-img">IMAGEN</div>
+        <div class="card-body">
+          <div class="badge">NUEVO</div>
+          <div class="card-title">HOODIE PHANTOM</div>
+          <div class="card-price">$1,299</div>
+          <button class="card-btn">AGREGAR</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-img">IMAGEN</div>
+        <div class="card-body">
+          <div class="badge">DROPS</div>
+          <div class="card-title">TENIS VOID</div>
+          <div class="card-price">$2,499</div>
+          <button class="card-btn">AGREGAR</button>
+        </div>
+      </div>
+    </div>
+    <div class="sidebar-row">
+      <div class="sidebar-icon active">⊞</div>
+      <span class="sidebar-text active">Dashboard</span>
+    </div>
+    <div class="sidebar-row">
+      <div class="sidebar-icon" style="color:#444">◻</div>
+      <span class="sidebar-text" style="color:#444">Productos</span>
+    </div>
+  </div>
+
+  <!-- OPCION 3 -->
+  <div class="demo o3">
+    <div class="demo-label">Opción 3</div>
+    <div class="demo-name">BLANCO PURO</div>
+    <div class="navbar">
+      <span class="nav-logo">VEINTIOX</span>
+      <div class="nav-links">
+        <span class="active">CATÁLOGO</span>
+        <span style="color:#555">HOODIES</span>
+        <span style="color:#555">TENIS</span>
+      </div>
+    </div>
+    <div class="banner" style="color:#000">ENVÍO GRATIS EN COMPRAS MAYORES A $999</div>
+    <div class="card-area">
+      <div class="card">
+        <div class="card-img">IMAGEN</div>
+        <div class="card-body">
+          <div class="badge">NUEVO</div>
+          <div class="card-title">HOODIE PHANTOM</div>
+          <div class="card-price">$1,299</div>
+          <button class="card-btn">AGREGAR</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-img">IMAGEN</div>
+        <div class="card-body">
+          <div class="badge">DROPS</div>
+          <div class="card-title">TENIS VOID</div>
+          <div class="card-price">$2,499</div>
+          <button class="card-btn">AGREGAR</button>
+        </div>
+      </div>
+    </div>
+    <div class="sidebar-row">
+      <div class="sidebar-icon active">⊞</div>
+      <span class="sidebar-text active">Dashboard</span>
+    </div>
+    <div class="sidebar-row">
+      <div class="sidebar-icon" style="color:#444">◻</div>
+      <span class="sidebar-text" style="color:#444">Productos</span>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

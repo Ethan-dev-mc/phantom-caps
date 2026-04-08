@@ -1,5 +1,9 @@
 import { notFound } from 'next/navigation'
-import { createSupabaseAdminClient } from '@/lib/supabase-server'
+import { createClient } from '@supabase/supabase-js'
+
+function getSupabase() {
+  return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
+}
 import AdminHeader from '@/components/admin/AdminHeader'
 import Badge from '@/components/atoms/Badge'
 import EstadoPedidoForm from './EstadoPedidoForm'
@@ -8,7 +12,7 @@ import CJSection from './CJSection'
 interface Props { params: { id: string } }
 
 export default async function DetallePedidoPage({ params }: Props) {
-  const supabase = createSupabaseAdminClient()
+  const supabase = getSupabase()
   const { data: pedidoRaw } = await supabase
     .from('pedidos')
     .select('*, pedido_items(*)')

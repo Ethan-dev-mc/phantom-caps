@@ -15,7 +15,6 @@ export async function createMercadoPagoPreference(pedidoId: string, total: numbe
         failure: `${SITE_URL}/carrito`,
         pending: `${SITE_URL}/checkout/confirmacion`,
       },
-      auto_return: 'approved',
       notification_url: `${SITE_URL}/api/webhooks/mercadopago`,
     }),
   })
