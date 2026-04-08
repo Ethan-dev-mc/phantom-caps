@@ -2,7 +2,7 @@ import { createClient } from '@supabase/supabase-js'
 
 const supabase = createClient(
   'https://aerypbbxibwgwmzgoxjk.supabase.co',
-  'sb_secret_SetQXXZoxZbpbYEq526wmg_9obZnLJB'
+  process.env.SUPABASE_SERVICE_ROLE_KEY
 )
 
 const updates = [
