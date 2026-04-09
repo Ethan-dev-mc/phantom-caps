@@ -88,6 +88,7 @@ export default function PedidosClient({ pedidos: pedidosInit }: { pedidos: Pedid
       if (!res.ok) throw new Error('Error al actualizar')
       setPedidos(prev => prev.map(p => seleccionados.has(p.id) ? { ...p, estado: estadoBulk } : p))
       setSeleccionados(new Set())
+      router.refresh()
     } catch (e: any) {
       alert(e.message)
     } finally {
@@ -108,6 +109,7 @@ export default function PedidosClient({ pedidos: pedidosInit }: { pedidos: Pedid
       if (!res.ok) throw new Error('Error al eliminar')
       setPedidos(prev => prev.filter(p => !seleccionados.has(p.id)))
       setSeleccionados(new Set())
+      router.refresh()
     } catch (e: any) {
       alert(e.message)
     } finally {

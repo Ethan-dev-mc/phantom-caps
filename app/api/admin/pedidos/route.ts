@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { revalidatePath } from 'next/cache'
 
 function getSupabase() {
   return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
@@ -13,6 +14,7 @@ export async function PATCH(req: NextRequest) {
 
   const { error } = await supabase.from('pedidos').update({ estado }).in('id', ids)
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  revalidatePath('/admin/pedidos')
   return NextResponse.json({ ok: true })
 }
 
@@ -23,8 +25,12 @@ export async function DELETE(req: NextRequest) {
   if (!ids?.length) return NextResponse.json({ error: 'Faltan ids' }, { status: 400 })
 
   // Eliminar items primero (FK)
-  await supabase.from('pedido_items').delete().in('pedido_id', ids)
+  const { error: errorItems } = await supabase.from('pedido_items').delete().in('pedido_id', ids)
+  if (errorItems) console.error('[DELETE pedidos] error items:', errorItems.message)
+
   const { error } = await supabase.from('pedidos').delete().in('id', ids)
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+  revalidatePath('/admin/pedidos')
   return NextResponse.json({ ok: true })
 }
