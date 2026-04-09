@@ -1,9 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Badge from '@/components/atoms/Badge'
 import Button from '@/components/atoms/Button'
+
+const ESTADOS = ['pendiente', 'pagado', 'enviado', 'entregado', 'cancelado'] as const
+type Estado = typeof ESTADOS[number]
 
 const ESTADO_BADGE: Record<string, 'default' | 'warning' | 'success' | 'cyan' | 'danger'> = {
   pendiente: 'warning', pagado: 'success', enviado: 'cyan', entregado: 'default', cancelado: 'danger',
@@ -21,14 +25,25 @@ interface Pedido {
   etiqueta_url?: string | null
 }
 
-export default function PedidosClient({ pedidos }: { pedidos: Pedido[] }) {
+export default function PedidosClient({ pedidos: pedidosInit }: { pedidos: Pedido[] }) {
+  const router = useRouter()
+  const [pedidos, setPedidos] = useState(pedidosInit)
   const [seleccionados, setSeleccionados] = useState<Set<string>>(new Set())
   const [generando, setGenerando] = useState(false)
+  const [eliminando, setEliminando] = useState(false)
+  const [cambiandoEstado, setCambiandoEstado] = useState(false)
+  const [filtro, setFiltro] = useState<string>('todos')
+  const [estadoBulk, setEstadoBulk] = useState<Estado>('pagado')
   const [resultados, setResultados] = useState<Record<string, { ok: boolean; url?: string; error?: string }>>({})
 
+  const pedidosFiltrados = useMemo(() =>
+    filtro === 'todos' ? pedidos : pedidos.filter(p => p.estado === filtro),
+    [pedidos, filtro]
+  )
+
   const toggleAll = () => {
-    if (seleccionados.size === pedidos.length) setSeleccionados(new Set())
-    else setSeleccionados(new Set(pedidos.map(p => p.id)))
+    if (seleccionados.size === pedidosFiltrados.length) setSeleccionados(new Set())
+    else setSeleccionados(new Set(pedidosFiltrados.map(p => p.id)))
   }
 
   const toggle = (id: string) => {
@@ -50,8 +65,6 @@ export default function PedidosClient({ pedidos }: { pedidos: Pedido[] }) {
       const mapa: Record<string, { ok: boolean; url?: string; error?: string }> = {}
       for (const r of (data ?? [])) mapa[r.pedidoId] = { ok: r.ok, url: r.etiqueta_url, error: r.error }
       setResultados(mapa)
-
-      // Abrir todas las etiquetas exitosas
       for (const r of (data ?? [])) {
         if (r.ok && r.etiqueta_url) window.open(r.etiqueta_url, '_blank')
       }
@@ -63,16 +76,101 @@ export default function PedidosClient({ pedidos }: { pedidos: Pedido[] }) {
     }
   }
 
+  const cambiarEstadoBulk = async () => {
+    if (!seleccionados.size) return
+    setCambiandoEstado(true)
+    try {
+      const res = await fetch('/api/admin/pedidos', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids: Array.from(seleccionados), estado: estadoBulk }),
+      })
+      if (!res.ok) throw new Error('Error al actualizar')
+      setPedidos(prev => prev.map(p => seleccionados.has(p.id) ? { ...p, estado: estadoBulk } : p))
+      setSeleccionados(new Set())
+    } catch (e: any) {
+      alert(e.message)
+    } finally {
+      setCambiandoEstado(false)
+    }
+  }
+
+  const eliminarSeleccionados = async () => {
+    if (!seleccionados.size) return
+    if (!confirm(`¿Eliminar ${seleccionados.size} pedido${seleccionados.size > 1 ? 's' : ''}? Esta acción no se puede deshacer.`)) return
+    setEliminando(true)
+    try {
+      const res = await fetch('/api/admin/pedidos', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids: Array.from(seleccionados) }),
+      })
+      if (!res.ok) throw new Error('Error al eliminar')
+      setPedidos(prev => prev.filter(p => !seleccionados.has(p.id)))
+      setSeleccionados(new Set())
+    } catch (e: any) {
+      alert(e.message)
+    } finally {
+      setEliminando(false)
+    }
+  }
+
+  const conteo = (estado: string) => pedidos.filter(p => p.estado === estado).length
+
   return (
     <div>
-      {/* Barra de acciones */}
+      {/* Filtros por estado */}
+      <div className="flex gap-2 flex-wrap mb-5">
+        {(['todos', ...ESTADOS] as string[]).map(e => (
+          <button
+            key={e}
+            onClick={() => { setFiltro(e); setSeleccionados(new Set()) }}
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium capitalize transition-colors ${
+              filtro === e
+                ? 'bg-vx-white text-vx-black'
+                : 'bg-vx-gray800 text-vx-gray400 hover:text-vx-white'
+            }`}
+          >
+            {e === 'todos' ? `Todos (${pedidos.length})` : `${e} (${conteo(e)})`}
+          </button>
+        ))}
+      </div>
+
+      {/* Barra de acciones bulk */}
       {seleccionados.size > 0 && (
-        <div className="mb-4 flex items-center gap-3 bg-vx-gray800 rounded-xl px-4 py-3">
-          <span className="text-sm text-vx-white">{seleccionados.size} pedido{seleccionados.size > 1 ? 's' : ''} seleccionado{seleccionados.size > 1 ? 's' : ''}</span>
+        <div className="mb-4 flex items-center gap-3 flex-wrap bg-vx-gray800 rounded-xl px-4 py-3">
+          <span className="text-sm text-vx-white font-medium">
+            {seleccionados.size} seleccionado{seleccionados.size > 1 ? 's' : ''}
+          </span>
+
+          {/* Cambiar estado bulk */}
+          <div className="flex items-center gap-2">
+            <select
+              value={estadoBulk}
+              onChange={e => setEstadoBulk(e.target.value as Estado)}
+              className="bg-vx-gray700 text-vx-white text-xs rounded-lg px-2 py-1.5 border border-vx-gray600"
+            >
+              {ESTADOS.map(e => <option key={e} value={e} className="capitalize">{e}</option>)}
+            </select>
+            <Button size="sm" onClick={cambiarEstadoBulk} loading={cambiandoEstado}>
+              Cambiar estado
+            </Button>
+          </div>
+
           <Button size="sm" onClick={generarEtiquetas} loading={generando}>
             Generar etiquetas
           </Button>
-          <button onClick={() => setSeleccionados(new Set())} className="text-xs text-vx-gray400 hover:text-vx-white ml-auto">
+
+          <Button
+            size="sm"
+            onClick={eliminarSeleccionados}
+            loading={eliminando}
+            className="!bg-red-600 hover:!bg-red-700 ml-auto"
+          >
+            Eliminar
+          </Button>
+
+          <button onClick={() => setSeleccionados(new Set())} className="text-xs text-vx-gray400 hover:text-vx-white">
             Cancelar
           </button>
         </div>
@@ -86,7 +184,7 @@ export default function PedidosClient({ pedidos }: { pedidos: Pedido[] }) {
                 <th className="px-4 py-3">
                   <input
                     type="checkbox"
-                    checked={seleccionados.size === pedidos.length && pedidos.length > 0}
+                    checked={seleccionados.size === pedidosFiltrados.length && pedidosFiltrados.length > 0}
                     onChange={toggleAll}
                     className="rounded border-vx-gray600 bg-vx-gray800 accent-white cursor-pointer"
                   />
@@ -97,7 +195,7 @@ export default function PedidosClient({ pedidos }: { pedidos: Pedido[] }) {
               </tr>
             </thead>
             <tbody>
-              {pedidos.map((p) => {
+              {pedidosFiltrados.map((p) => {
                 const res = resultados[p.id]
                 return (
                   <tr key={p.id} className={`border-b border-vx-gray800/50 hover:bg-vx-gray800/30 ${seleccionados.has(p.id) ? 'bg-vx-gray800/50' : ''}`}>
@@ -125,16 +223,18 @@ export default function PedidosClient({ pedidos }: { pedidos: Pedido[] }) {
                       </div>
                     </td>
                     <td className="px-5 py-3 text-vx-gray500 text-xs">{new Date(p.created_at).toLocaleDateString('es-MX')}</td>
-                    <td className="px-5 py-3 flex items-center gap-3">
-                      <Link href={`/admin/pedidos/${p.id}`} className="text-vx-cyan text-xs hover:underline">Ver</Link>
-                      {p.etiqueta_url && (
-                        <a href={p.etiqueta_url} target="_blank" rel="noopener noreferrer" className="text-green-400 text-xs hover:underline">Etiqueta</a>
-                      )}
+                    <td className="px-5 py-3">
+                      <div className="flex items-center gap-3">
+                        <Link href={`/admin/pedidos/${p.id}`} className="text-vx-cyan text-xs hover:underline">Ver / Editar</Link>
+                        {p.etiqueta_url && (
+                          <a href={p.etiqueta_url} target="_blank" rel="noopener noreferrer" className="text-green-400 text-xs hover:underline">Etiqueta</a>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 )
               })}
-              {!pedidos.length && (
+              {!pedidosFiltrados.length && (
                 <tr><td colSpan={9} className="px-5 py-10 text-center text-vx-gray500 text-xs">Sin pedidos</td></tr>
               )}
             </tbody>
