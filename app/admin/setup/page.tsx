@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import Input from '@/components/atoms/Input'
@@ -12,6 +12,20 @@ export default function SetupPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [checking, setChecking] = useState(true)
+  const [allowed, setAllowed] = useState(false)
+
+  useEffect(() => {
+    // Solo permitir setup si no hay admins registrados
+    fetch('/api/admin/setup-check')
+      .then(r => r.json())
+      .then(({ allowed }) => {
+        if (!allowed) router.replace('/admin/login')
+        else setAllowed(true)
+      })
+      .catch(() => router.replace('/admin/login'))
+      .finally(() => setChecking(false))
+  }, [router])
 
   const handleSetup = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -25,7 +39,6 @@ export default function SetupPage() {
       return
     }
 
-    // Auto login tras registro
     const { error: loginError } = await (supabase as any).auth.signInWithPassword({ email, password })
     if (loginError) {
       setError('Cuenta creada. Inicia sesión manualmente.')
@@ -36,6 +49,10 @@ export default function SetupPage() {
     router.push('/admin/dashboard')
   }
 
+  if (checking) return null
+
+  if (!allowed) return null
+
   return (
     <div className="min-h-screen bg-vx-black flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
@@ -43,33 +60,17 @@ export default function SetupPage() {
           <span className="font-display text-3xl text-vx-white tracking-widest">VEINTIOX</span>
           <p className="text-xs text-vx-gray500 uppercase tracking-wider mt-1">Configuración inicial</p>
         </div>
-
         <form onSubmit={handleSetup} className="bg-vx-gray900 rounded-2xl p-6 flex flex-col gap-5">
           <div>
             <p className="text-sm text-vx-white font-semibold mb-1">Crear cuenta administrador</p>
-            <p className="text-xs text-vx-gray500">Usa este formulario solo la primera vez para crear tu acceso.</p>
+            <p className="text-xs text-vx-gray500">Usa este formulario solo la primera vez.</p>
           </div>
-          <Input
-            label="Email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="admin@veintiox.store"
-            required
-          />
-          <Input
-            label="Contraseña"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Mínimo 6 caracteres"
-            required
-          />
+          <Input label="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="admin@veintiox.store" required />
+          <Input label="Contraseña" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Mínimo 6 caracteres" required />
           {error && <p className="text-xs text-red-400">{error}</p>}
           <Button type="submit" fullWidth loading={loading}>Crear cuenta y entrar</Button>
           <p className="text-center text-xs text-vx-gray500">
-            ¿Ya tienes cuenta?{' '}
-            <a href="/admin/login" className="text-vx-cyan hover:underline">Iniciar sesión</a>
+            ¿Ya tienes cuenta? <a href="/admin/login" className="text-vx-cyan hover:underline">Iniciar sesión</a>
           </p>
         </form>
       </div>
