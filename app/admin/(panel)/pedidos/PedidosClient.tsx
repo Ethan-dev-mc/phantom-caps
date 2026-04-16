@@ -49,12 +49,6 @@ interface Pedido {
   etiqueta_url?: string | null
 }
 
-// Tiempo restante para cancelar (10 min desde pagado_at)
-function minutosRestantes(pagado_at: string | null | undefined): number {
-  if (!pagado_at) return 0
-  const diff = Date.now() - new Date(pagado_at).getTime()
-  return Math.max(0, 10 - Math.floor(diff / 60000))
-}
 
 export default function PedidosClient({ pedidos: pedidosInit }: { pedidos: Pedido[] }) {
   const router = useRouter()
@@ -273,7 +267,6 @@ export default function PedidosClient({ pedidos: pedidosInit }: { pedidos: Pedid
             <tbody>
               {pedidosFiltrados.map((p) => {
                 const res = resultados[p.id]
-                const minRest = vista === 'pagados' ? minutosRestantes(p.pagado_at) : 0
                 return (
                   <tr key={p.id} className={`border-b border-vx-gray800/50 hover:bg-vx-gray800/30 ${seleccionados.has(p.id) ? 'bg-vx-gray800/50' : ''}`}>
                     <td className="px-4 py-3">
@@ -300,11 +293,6 @@ export default function PedidosClient({ pedidos: pedidosInit }: { pedidos: Pedid
                             </span>
                           )}
                         </div>
-                        {minRest > 0 && p.estado === 'pendiente_envio' && (
-                          <span className="text-xs text-yellow-400">
-                            Cliente puede cancelar: {minRest} min restantes
-                          </span>
-                        )}
                       </div>
                     </td>
                     <td className="px-5 py-3 text-vx-gray500 text-xs">
