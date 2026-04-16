@@ -6,7 +6,7 @@ import { clsx } from 'clsx'
 import { supabase } from '@/lib/supabase'
 import {
   IconDashboard, IconPackage, IconZap, IconCart,
-  IconUsers, IconSettings, IconLogOut,
+  IconUsers, IconSettings, IconLogOut, IconTag,
 } from '@/components/atoms/Icon'
 
 const NAV = [
@@ -15,6 +15,7 @@ const NAV = [
   { href: '/admin/kits',          label: 'Kits',          icon: IconPackage },
   { href: '/admin/drops',         label: 'Drops',         icon: IconZap },
   { href: '/admin/pedidos',       label: 'Pedidos',       icon: IconCart },
+  { href: '/admin/cupones',       label: 'Cupones',       icon: IconTag },
   { href: '/admin/usuarios',      label: 'Usuarios',      icon: IconUsers },
   { href: '/admin/configuracion', label: 'Configuración', icon: IconSettings },
 ]
