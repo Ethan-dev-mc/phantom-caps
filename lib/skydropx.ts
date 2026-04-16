@@ -1,12 +1,10 @@
 const BASE = 'https://api.skydropx.com/v1'
 
 function headers() {
-  const credentials = Buffer.from(
-    `${process.env.SKYDROPX_API_KEY}:${process.env.SKYDROPX_API_SECRET}`
-  ).toString('base64')
   return {
     'Content-Type': 'application/json',
-    Authorization: `Basic ${credentials}`,
+    Authorization: `Bearer ${process.env.SKYDROPX_API_KEY}`,
+    'X-Api-Secret': process.env.SKYDROPX_API_SECRET ?? '',
   }
 }
 

@@ -25,13 +25,30 @@ export async function POST(req: NextRequest) {
     const pedidoId = payment.external_reference
     if (!pedidoId) return NextResponse.json({ ok: true })
 
-    // Marcar como pagado
+    // Marcar como pendiente de envío (pagado pero aún no enviado)
     const { data: pedido } = await supabase
       .from('pedidos')
-      .update({ estado: 'pagado', mp_payment_id: String(paymentId) })
+      .update({ estado: 'pendiente_envio', mp_payment_id: String(paymentId), pagado_at: new Date().toISOString() })
       .eq('id', pedidoId)
-      .select('numero_pedido, cliente_nombre, cliente_email, total, metodo_pago')
+      .select('numero_pedido, cliente_nombre, cliente_email, total, metodo_pago, cupon_id')
       .single()
+
+    // Incrementar ventas_count en productos
+    const { data: pedidoItems } = await supabase
+      .from('pedido_items')
+      .select('producto_id, cantidad')
+      .eq('pedido_id', pedidoId)
+
+    if (pedidoItems?.length) {
+      await Promise.allSettled(pedidoItems.map(item =>
+        supabase.rpc('incrementar_ventas', { p_producto_id: item.producto_id, p_cantidad: item.cantidad })
+      ))
+    }
+
+    // Incrementar usos del cupón si aplica
+    if (pedido?.cupon_id) {
+      await supabase.rpc('incrementar_usos_cupon', { p_cupon_id: pedido.cupon_id })
+    }
 
     // Enviar emails si hay API key configurada
     if (pedido && process.env.RESEND_API_KEY) {

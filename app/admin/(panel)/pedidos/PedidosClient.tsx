@@ -6,11 +6,34 @@ import Link from 'next/link'
 import Badge from '@/components/atoms/Badge'
 import Button from '@/components/atoms/Button'
 
-const ESTADOS = ['pendiente', 'pagado', 'enviado', 'entregado', 'cancelado'] as const
-type Estado = typeof ESTADOS[number]
+const ESTADOS_BULK = ['pendiente_envio', 'enviado', 'entregado', 'cancelado'] as const
+type EstadoBulk = typeof ESTADOS_BULK[number]
 
 const ESTADO_BADGE: Record<string, 'default' | 'warning' | 'success' | 'cyan' | 'danger'> = {
-  pendiente: 'warning', pagado: 'success', enviado: 'cyan', entregado: 'default', cancelado: 'danger',
+  pendiente: 'warning',
+  pendiente_envio: 'warning',
+  enviado: 'cyan',
+  entregado: 'success',
+  cancelado: 'danger',
+}
+
+const ESTADO_LABEL: Record<string, string> = {
+  pendiente: 'Sin pagar',
+  pendiente_envio: 'Pend. envío',
+  enviado: 'Enviado',
+  entregado: 'Entregado',
+  cancelado: 'Cancelado',
+}
+
+// Pagados = pendiente_envio | enviado | entregado
+// Incompletos = pendiente (checkout iniciado, sin pago)
+// Cancelados = cancelado
+type Vista = 'pagados' | 'incompletos' | 'cancelados'
+
+const ESTADOS_POR_VISTA: Record<Vista, string[]> = {
+  pagados:     ['pendiente_envio', 'enviado', 'entregado'],
+  incompletos: ['pendiente'],
+  cancelados:  ['cancelado'],
 }
 
 interface Pedido {
@@ -22,24 +45,40 @@ interface Pedido {
   metodo_pago: string
   estado: string
   created_at: string
+  pagado_at?: string | null
   etiqueta_url?: string | null
+}
+
+// Tiempo restante para cancelar (10 min desde pagado_at)
+function minutosRestantes(pagado_at: string | null | undefined): number {
+  if (!pagado_at) return 0
+  const diff = Date.now() - new Date(pagado_at).getTime()
+  return Math.max(0, 10 - Math.floor(diff / 60000))
 }
 
 export default function PedidosClient({ pedidos: pedidosInit }: { pedidos: Pedido[] }) {
   const router = useRouter()
   const [pedidos, setPedidos] = useState(pedidosInit)
+  const [vista, setVista] = useState<Vista>('pagados')
+  const [filtroEstado, setFiltroEstado] = useState<string>('todos')
   const [seleccionados, setSeleccionados] = useState<Set<string>>(new Set())
   const [generando, setGenerando] = useState(false)
   const [eliminando, setEliminando] = useState(false)
   const [cambiandoEstado, setCambiandoEstado] = useState(false)
-  const [filtro, setFiltro] = useState<string>('todos')
-  const [estadoBulk, setEstadoBulk] = useState<Estado>('pagado')
+  const [estadoBulk, setEstadoBulk] = useState<EstadoBulk>('pendiente_envio')
   const [resultados, setResultados] = useState<Record<string, { ok: boolean; url?: string; error?: string }>>({})
 
-  const pedidosFiltrados = useMemo(() =>
-    filtro === 'todos' ? pedidos : pedidos.filter(p => p.estado === filtro),
-    [pedidos, filtro]
+  const pedidosVista = useMemo(() =>
+    pedidos.filter(p => ESTADOS_POR_VISTA[vista].includes(p.estado)),
+    [pedidos, vista]
   )
+
+  const pedidosFiltrados = useMemo(() => {
+    if (filtroEstado === 'todos') return pedidosVista
+    return pedidosVista.filter(p => p.estado === filtroEstado)
+  }, [pedidosVista, filtroEstado])
+
+  const conteoVista = (v: Vista) => pedidos.filter(p => ESTADOS_POR_VISTA[v].includes(p.estado)).length
 
   const toggleAll = () => {
     if (seleccionados.size === pedidosFiltrados.length) setSeleccionados(new Set())
@@ -50,6 +89,12 @@ export default function PedidosClient({ pedidos: pedidosInit }: { pedidos: Pedid
     const s = new Set(seleccionados)
     s.has(id) ? s.delete(id) : s.add(id)
     setSeleccionados(s)
+  }
+
+  const cambiarVista = (v: Vista) => {
+    setVista(v)
+    setFiltroEstado('todos')
+    setSeleccionados(new Set())
   }
 
   const generarEtiquetas = async () => {
@@ -117,26 +162,55 @@ export default function PedidosClient({ pedidos: pedidosInit }: { pedidos: Pedid
     }
   }
 
-  const conteo = (estado: string) => pedidos.filter(p => p.estado === estado).length
+  const VISTAS: { key: Vista; label: string; color: string }[] = [
+    { key: 'pagados',     label: 'Pagados',     color: 'text-green-400' },
+    { key: 'incompletos', label: 'Incompletos', color: 'text-yellow-400' },
+    { key: 'cancelados',  label: 'Cancelados',  color: 'text-red-400' },
+  ]
 
   return (
     <div>
-      {/* Filtros por estado */}
-      <div className="flex gap-2 flex-wrap mb-5">
-        {(['todos', ...ESTADOS] as string[]).map(e => (
+      {/* Tabs principales */}
+      <div className="flex gap-1 mb-6 bg-vx-gray900 rounded-xl p-1 w-fit border border-vx-gray800">
+        {VISTAS.map(({ key, label, color }) => (
           <button
-            key={e}
-            onClick={() => { setFiltro(e); setSeleccionados(new Set()) }}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium capitalize transition-colors ${
-              filtro === e
-                ? 'bg-vx-white text-vx-black'
-                : 'bg-vx-gray800 text-vx-gray400 hover:text-vx-white'
+            key={key}
+            onClick={() => cambiarVista(key)}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
+              vista === key
+                ? 'bg-vx-gray800 text-vx-white'
+                : 'text-vx-gray500 hover:text-vx-white'
             }`}
           >
-            {e === 'todos' ? `Todos (${pedidos.length})` : `${e} (${conteo(e)})`}
+            {label}
+            <span className={`text-xs font-mono ${vista === key ? color : 'text-vx-gray600'}`}>
+              {conteoVista(key)}
+            </span>
           </button>
         ))}
       </div>
+
+      {/* Sub-filtros por estado (solo en vista pagados) */}
+      {vista === 'pagados' && (
+        <div className="flex gap-2 flex-wrap mb-4">
+          {(['todos', 'pendiente_envio', 'enviado', 'entregado'] as string[]).map(e => (
+            <button
+              key={e}
+              onClick={() => { setFiltroEstado(e); setSeleccionados(new Set()) }}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                filtroEstado === e
+                  ? 'bg-vx-white text-vx-black'
+                  : 'bg-vx-gray800 text-vx-gray400 hover:text-vx-white'
+              }`}
+            >
+              {e === 'todos'
+                ? `Todos (${pedidosVista.length})`
+                : `${ESTADO_LABEL[e]} (${pedidosVista.filter(p => p.estado === e).length})`
+              }
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Barra de acciones bulk */}
       {seleccionados.size > 0 && (
@@ -144,25 +218,25 @@ export default function PedidosClient({ pedidos: pedidosInit }: { pedidos: Pedid
           <span className="text-sm text-vx-white font-medium">
             {seleccionados.size} seleccionado{seleccionados.size > 1 ? 's' : ''}
           </span>
-
-          {/* Cambiar estado bulk */}
           <div className="flex items-center gap-2">
             <select
               value={estadoBulk}
-              onChange={e => setEstadoBulk(e.target.value as Estado)}
+              onChange={e => setEstadoBulk(e.target.value as EstadoBulk)}
               className="bg-vx-gray700 text-vx-white text-xs rounded-lg px-2 py-1.5 border border-vx-gray600"
             >
-              {ESTADOS.map(e => <option key={e} value={e} className="capitalize">{e}</option>)}
+              {ESTADOS_BULK.map(e => (
+                <option key={e} value={e}>{ESTADO_LABEL[e] ?? e}</option>
+              ))}
             </select>
             <Button size="sm" onClick={cambiarEstadoBulk} loading={cambiandoEstado}>
               Cambiar estado
             </Button>
           </div>
-
-          <Button size="sm" onClick={generarEtiquetas} loading={generando}>
-            Generar etiquetas
-          </Button>
-
+          {vista === 'pagados' && (
+            <Button size="sm" onClick={generarEtiquetas} loading={generando}>
+              Generar etiquetas
+            </Button>
+          )}
           <Button
             size="sm"
             onClick={eliminarSeleccionados}
@@ -171,13 +245,13 @@ export default function PedidosClient({ pedidos: pedidosInit }: { pedidos: Pedid
           >
             Eliminar
           </Button>
-
           <button onClick={() => setSeleccionados(new Set())} className="text-xs text-vx-gray400 hover:text-vx-white">
             Cancelar
           </button>
         </div>
       )}
 
+      {/* Tabla */}
       <div className="bg-vx-gray900 rounded-xl border border-vx-gray800 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -191,7 +265,7 @@ export default function PedidosClient({ pedidos: pedidosInit }: { pedidos: Pedid
                     className="rounded border-vx-gray600 bg-vx-gray800 accent-white cursor-pointer"
                   />
                 </th>
-                {['Pedido', 'Cliente', 'Email', 'Total', 'Pago', 'Estado', 'Fecha', ''].map(h => (
+                {['Pedido', 'Cliente', 'Email', 'Total', 'Estado', 'Fecha', ''].map(h => (
                   <th key={h} className="px-5 py-3 text-left">{h}</th>
                 ))}
               </tr>
@@ -199,6 +273,7 @@ export default function PedidosClient({ pedidos: pedidosInit }: { pedidos: Pedid
             <tbody>
               {pedidosFiltrados.map((p) => {
                 const res = resultados[p.id]
+                const minRest = vista === 'pagados' ? minutosRestantes(p.pagado_at) : 0
                 return (
                   <tr key={p.id} className={`border-b border-vx-gray800/50 hover:bg-vx-gray800/30 ${seleccionados.has(p.id) ? 'bg-vx-gray800/50' : ''}`}>
                     <td className="px-4 py-3">
@@ -213,23 +288,37 @@ export default function PedidosClient({ pedidos: pedidosInit }: { pedidos: Pedid
                     <td className="px-5 py-3 text-vx-white">{p.cliente_nombre}</td>
                     <td className="px-5 py-3 text-vx-gray400 text-xs">{p.cliente_email}</td>
                     <td className="px-5 py-3 text-vx-white">${Number(p.total).toFixed(2)}</td>
-                    <td className="px-5 py-3 text-vx-gray400 capitalize">{p.metodo_pago}</td>
                     <td className="px-5 py-3">
-                      <div className="flex items-center gap-2">
-                        <Badge variant={ESTADO_BADGE[p.estado] ?? 'default'}>{p.estado}</Badge>
-                        {res && (
-                          <span className={`text-xs ${res.ok ? 'text-green-400' : 'text-red-400'}`}>
-                            {res.ok ? '✓ etiqueta' : `✗ ${res.error}`}
+                      <div className="flex flex-col gap-1">
+                        <div className="flex items-center gap-2">
+                          <Badge variant={ESTADO_BADGE[p.estado] ?? 'default'}>
+                            {ESTADO_LABEL[p.estado] ?? p.estado}
+                          </Badge>
+                          {res && (
+                            <span className={`text-xs ${res.ok ? 'text-green-400' : 'text-red-400'}`}>
+                              {res.ok ? '✓ etiqueta' : `✗ ${res.error}`}
+                            </span>
+                          )}
+                        </div>
+                        {minRest > 0 && p.estado === 'pendiente_envio' && (
+                          <span className="text-xs text-yellow-400">
+                            Cliente puede cancelar: {minRest} min restantes
                           </span>
                         )}
                       </div>
                     </td>
-                    <td className="px-5 py-3 text-vx-gray500 text-xs">{new Date(p.created_at).toLocaleDateString('es-MX')}</td>
+                    <td className="px-5 py-3 text-vx-gray500 text-xs">
+                      {new Date(p.created_at).toLocaleDateString('es-MX')}
+                    </td>
                     <td className="px-5 py-3">
                       <div className="flex items-center gap-3">
-                        <Link href={`/admin/pedidos/${p.id}`} className="text-vx-cyan text-xs hover:underline">Ver / Editar</Link>
+                        <Link href={`/admin/pedidos/${p.id}`} className="text-vx-cyan text-xs hover:underline">
+                          Ver / Editar
+                        </Link>
                         {p.etiqueta_url && (
-                          <a href={p.etiqueta_url} target="_blank" rel="noopener noreferrer" className="text-green-400 text-xs hover:underline">Etiqueta</a>
+                          <a href={p.etiqueta_url} target="_blank" rel="noopener noreferrer" className="text-green-400 text-xs hover:underline">
+                            Etiqueta
+                          </a>
                         )}
                       </div>
                     </td>
@@ -237,7 +326,13 @@ export default function PedidosClient({ pedidos: pedidosInit }: { pedidos: Pedid
                 )
               })}
               {!pedidosFiltrados.length && (
-                <tr><td colSpan={9} className="px-5 py-10 text-center text-vx-gray500 text-xs">Sin pedidos</td></tr>
+                <tr>
+                  <td colSpan={8} className="px-5 py-10 text-center text-vx-gray500 text-xs">
+                    {vista === 'incompletos' && 'Sin pedidos incompletos — todos los clientes completaron su pago.'}
+                    {vista === 'pagados' && 'Sin pedidos pagados aún.'}
+                    {vista === 'cancelados' && 'Sin pedidos cancelados.'}
+                  </td>
+                </tr>
               )}
             </tbody>
           </table>
