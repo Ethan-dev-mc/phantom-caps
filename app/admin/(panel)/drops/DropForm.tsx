@@ -24,17 +24,19 @@ export default function DropForm({ drop }: Props) {
   const set = (key: string, value: unknown) => setForm((f) => ({ ...f, [key]: value }))
 
   const save = async () => {
+    if (!form.nombre.trim()) { setError('El nombre es obligatorio'); return }
+    if (!form.fecha_inicio) { setError('La fecha de inicio es obligatoria'); return }
     setSaving(true)
     setError('')
-    const payload: Record<string, unknown> = {
-      nombre:      form.nombre,
-      descripcion: form.descripcion,
-      fecha_inicio: new Date(form.fecha_inicio).toISOString(),
-      fecha_fin:   form.fecha_fin ? new Date(form.fecha_fin).toISOString() : null,
-      activo:      form.activo,
-    }
-    if (drop) payload.id = drop.id
     try {
+      const payload: Record<string, unknown> = {
+        nombre:      form.nombre,
+        descripcion: form.descripcion,
+        fecha_inicio: new Date(form.fecha_inicio).toISOString(),
+        fecha_fin:   form.fecha_fin ? new Date(form.fecha_fin).toISOString() : null,
+        activo:      form.activo,
+      }
+      if (drop) payload.id = drop.id
       const res = await fetch('/api/admin/drops', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
